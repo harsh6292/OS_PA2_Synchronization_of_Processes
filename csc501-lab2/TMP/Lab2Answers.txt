@@ -1,0 +1,122 @@
+1. The priority inversion problem could cause that a higher-priority process needs to wait for the completion of a lower-priority process.
+	A. Priority inheritance is one approach to address this issue. Please give another approach and briefly describe its idea.
+		
+		Ans. Another approach to solve the priority inversion problem is Priority Ceiling Protocol.
+			I.  In this protocol, each shared resource (semaphore) is assigned a ceiling priority which is initialized to a value greater than any 
+			    of the processes that may acquire the shared resource.
+			II. A task or process P1 can access the semaphore if the semaphore is not allocated to any other process and the priority of Process P1 is
+			    strictly higher than the system ceiling i.e. the priority is higher than the ceiling priority of all the semaphores allocated to other 
+				processes other than this process P1.
+			III. If Process P1 priority is not higher than the ceiling priority of all semaphores, then this process is blocked and the process holding 
+			     the lock inherits the priority of this Process P1.
+				 
+				 
+	B. Design a test case to show that your approach can address the priority inversion problem. You should compare the results that derived from the original
+       XINU implementation (use semaphore) and that derived from your implementation (use readers/writer locks).
+
+	Ans. 
+
+		The test case designed is included in the /sys and /TMP folder and is named task1.c
+		
+		In the semaphore implementation, when a low priority process is acquires a semaphore it blocks all other high priority processes waiting on the semaphore.
+		Hence, a low priority process will be blocked because high priority process will get scheduled every time. But the high priority process is waiting to acquire
+		a mutex which is held by low priority process. Hence, until a low priority process completes, the high priority process will be blocked. If there are processes
+		whose priority is between the high priority and low priority process, the low priority will be blocked for a more longer time. This cause priority inversion 
+		problem.
+		
+		Whereas, in the priority inheritance protocol, a low priority process which blocks the high priority process will inherit the high priority process's priority 
+		and will execute with the high priority. Hence, a low priority process will now not be blocked by processes which have priority between the high priority process
+		and the low priority process.
+		
+		The test case output is shown here below:
+		
+		
+	    Test for Semaphore for priority inversion
+		Reader1_sem: to acquire semaphore
+		Reader1_sem: acquired lock. Then sleep 5 seconds.
+		RRRRRRRRR
+		Writer1_sem: to acquire lock
+		
+		RRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARRRRRRRRRRRBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+		BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBRRRRRRRRRRRCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+		CCCCCCCCCCCCRRRRRRRRR
+							^.........Here the low priority reader is preempted by middle priority process and hence the high priority writer waits for semaphore.
+							
+		Reader1_sem: to release lock
+		Writer1_sem: acquired lock, sleep 5s
+		
+		WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+  
+		Writer1_sem: to release lock
+		Semaphore priority inversion completed
+
+		
+		Test for Locks for priority inversion
+		Reader1_lock: to acquire lock.
+		Reader1_lock: acquired lock. Then sleep 5 seconds.
+		RRRRRRRRR
+		Writer1_lock: to acquire lock.
+
+		RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+												^.........Here the low priority reader inherits priority of writer and completes its execution before other middle priority
+												          processes executes and when this reader finishes, the writer acquires lock and since it has higher priority it executes
+														  before other middle priority processes are executed.
+		Reader1_lock: to release lock
+
+		Writer1_lock: acquired lock. Then sleep 5 seconds.
+		WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+		Writer1_lock: to release lock
+
+		AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+		BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+		Locks priority inversion completed
+		All user processes have completed.
+	   
+	   
+	   
+	   
+2. Synchronization is a quite complex issue in operating systems. To show your understanding about process synchronization, you are asked to point out a 
+   reader/writer synchronization issue in this pseudo-code: task2_sync_issue.c. Multiple reader threads can execute this code concurrently by calling do_update. 
+   All the variables starting with global_ are global variables. You are asked to describe the potential issue caused by the incorrect synchronization and point 
+   out at least one possible thread interleaving that would trigger the problem.
+
+Ans. 
+	In the pseudo-code given, multiple readers can enter the do_update() function. Since all processes are reader, all of them will be given lock.
+	After all the readers have acquired lock, they will all try to update the buffer and call try_update() function.
+	
+	A potential problem will arise as the all readers are trying to access and modify the global buffer, global_buf.
+	
+	Now let us suppose, reader1 comes and acquires lock and tries to update gloabl_buf by calling buffer_add function.
+	
+	==================================================================================================================================================================
+	buffer_add (buffer_t *buf, const char *txt, int size)
+	{
+		int free = buf->size - buf->len;
+		if (size <= 0)
+			return OK;
+		if ( free < (size+1)) {
+				return ERROR;
+		}
+		memcpy (buf->buf + buf->len, txt, size);				---------------------->>>> If reader1 was currently executing here and a timer interrupt causes it to
+		buf->len += size;																	give CPU, then this reader1 won't be able to update the length of buffer.
+		buf->buf[buf->len] = '\0';
+
+		return OK;
+	}
+	===================================================================================================================================================================
+	
+	Now if suppose reader2 comes and acquires lock and it also updates the global buffer, global_buf. If reader2 also reaches to the above memcpy statement and try to
+	execute it, this reader2 will overwrite the contents of the buffer previously modified by reader1. This causes a problem because what the reader1 has written 
+	earlier in the buffer is now lost. So when reader1 returns to execute its remaining statements, it will update the length of the buffer now, which it should not do,
+	since the length of buffer it wrote was overwritten by reader2.
+	
+	A possible thread interleaving that would trigger the problem is given as:
+	
+	Reader1
+	resched()	(when reader1 was writing into the buffer)
+	Reader2
+	resched()	(when reader2 was writing into the buffer)
+	Reader1
+	resched
+	Reader2.
