@@ -1,0 +1,1077 @@
+
+<!-- saved from url=(0055)http://www.csc.ncsu.edu/faculty/jiang/csc501/labs/lab2/ -->
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="ProgId" content="Word.Document">
+<meta name="Generator" content="Microsoft Word 12">
+<meta name="Originator" content="Microsoft Word 12">
+<link rel="File-List" href="http://www.csc.ncsu.edu/faculty/jiang/csc501/labs/lab2/lab2_files/filelist.xml">
+<title>Lab 2: Read/Write Locks with Priority Inheritance</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Xuxian Jiang</o:Author>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor>Xuxian Jiang</o:LastAuthor>
+  <o:Revision>12</o:Revision>
+  <o:TotalTime>6</o:TotalTime>
+  <o:Created>2008-12-04T14:23:00Z</o:Created>
+  <o:LastSaved>2008-12-04T14:29:00Z</o:LastSaved>
+  <o:Pages>3</o:Pages>
+  <o:Words>2016</o:Words>
+  <o:Characters>11492</o:Characters>
+  <o:Lines>95</o:Lines>
+  <o:Paragraphs>26</o:Paragraphs>
+  <o:CharactersWithSpaces>13482</o:CharactersWithSpaces>
+  <o:Version>12.00</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]-->
+<link rel="themeData" href="http://www.csc.ncsu.edu/faculty/jiang/csc501/labs/lab2/lab2_files/themedata.thmx">
+<link rel="colorSchemeMapping" href="http://www.csc.ncsu.edu/faculty/jiang/csc501/labs/lab2/lab2_files/colorschememapping.xml">
+<!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:TrackMoves>false</w:TrackMoves>
+  <w:TrackFormatting/>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:DoNotPromoteQF/>
+  <w:LidThemeOther>EN-US</w:LidThemeOther>
+  <w:LidThemeAsian>ZH-CN</w:LidThemeAsian>
+  <w:LidThemeComplexScript>X-NONE</w:LidThemeComplexScript>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+   <w:DontGrowAutofit/>
+   <w:SplitPgBreakAndParaMark/>
+   <w:DontVertAlignCellWithSp/>
+   <w:DontBreakConstrainedForcedTables/>
+   <w:DontVertAlignInTxbx/>
+   <w:Word11KerningPairs/>
+   <w:CachedColBalance/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+  <m:mathPr>
+   <m:mathFont m:val="Cambria Math"/>
+   <m:brkBin m:val="before"/>
+   <m:brkBinSub m:val="&#45;-"/>
+   <m:smallFrac m:val="off"/>
+   <m:dispDef/>
+   <m:lMargin m:val="0"/>
+   <m:rMargin m:val="0"/>
+   <m:defJc m:val="centerGroup"/>
+   <m:wrapIndent m:val="1440"/>
+   <m:intLim m:val="subSup"/>
+   <m:naryLim m:val="undOvr"/>
+  </m:mathPr></w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" DefUnhideWhenUsed="true"
+  DefSemiHidden="true" DefQFormat="false" DefPriority="99"
+  LatentStyleCount="267">
+  <w:LsdException Locked="false" Priority="0" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Normal"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="heading 1"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 2"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="heading 3"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="heading 4"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 5"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 6"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 7"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 8"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 9"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 1"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 2"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 3"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 4"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 5"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 6"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 7"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 8"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 9"/>
+  <w:LsdException Locked="false" Priority="35" QFormat="true" Name="caption"/>
+  <w:LsdException Locked="false" Priority="10" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Title"/>
+  <w:LsdException Locked="false" Priority="1" Name="Default Paragraph Font"/>
+  <w:LsdException Locked="false" Priority="11" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Subtitle"/>
+  <w:LsdException Locked="false" Priority="22" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Strong"/>
+  <w:LsdException Locked="false" Priority="20" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Emphasis"/>
+  <w:LsdException Locked="false" Priority="59" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Table Grid"/>
+  <w:LsdException Locked="false" UnhideWhenUsed="false" Name="Placeholder Text"/>
+  <w:LsdException Locked="false" Priority="1" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="No Spacing"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 1"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 1"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 1"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 1"/>
+  <w:LsdException Locked="false" UnhideWhenUsed="false" Name="Revision"/>
+  <w:LsdException Locked="false" Priority="34" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="List Paragraph"/>
+  <w:LsdException Locked="false" Priority="29" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Quote"/>
+  <w:LsdException Locked="false" Priority="30" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Intense Quote"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 1"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 1"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 1"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 1"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 1"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 2"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 2"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 2"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 2"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 2"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 2"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 2"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 2"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 3"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 3"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 3"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 3"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 3"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 3"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 3"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 3"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 4"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 4"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 4"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 4"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 4"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 4"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 4"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 4"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 5"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 5"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 5"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 5"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 5"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 5"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 5"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 5"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 6"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 6"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 6"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 6"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 6"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 6"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 6"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 6"/>
+  <w:LsdException Locked="false" Priority="19" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Subtle Emphasis"/>
+  <w:LsdException Locked="false" Priority="21" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Intense Emphasis"/>
+  <w:LsdException Locked="false" Priority="31" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Subtle Reference"/>
+  <w:LsdException Locked="false" Priority="32" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Intense Reference"/>
+  <w:LsdException Locked="false" Priority="33" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Book Title"/>
+  <w:LsdException Locked="false" Priority="37" Name="Bibliography"/>
+  <w:LsdException Locked="false" Priority="39" QFormat="true" Name="TOC Heading"/>
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-alt:\5B8B\4F53;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 680460288 22 0 262145 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;
+	mso-font-charset:1;
+	mso-generic-font-family:roman;
+	mso-font-format:other;
+	mso-font-pitch:variable;
+	mso-font-signature:0 0 0 0 0 0;}
+@font-face
+	{font-family:Consolas;
+	panose-1:2 11 6 9 2 2 4 3 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:roman;
+	mso-font-format:other;
+	mso-font-pitch:auto;
+	mso-font-signature:0 0 0 0 0 0;}
+@font-face
+	{font-family:"\@SimSun";
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 680460288 22 0 262145 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman","serif";
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:minor-fareast;}
+h1
+	{mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 1 Char";
+	mso-margin-top-alt:auto;
+	margin-right:0in;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	mso-outline-level:1;
+	font-size:24.0pt;
+	font-family:"Times New Roman","serif";
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:minor-fareast;
+	font-weight:bold;}
+h2
+	{mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 2 Char";
+	mso-style-next:Normal;
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan lines-together;
+	page-break-after:avoid;
+	mso-outline-level:2;
+	font-size:13.0pt;
+	font-family:"Cambria","serif";
+	mso-ascii-font-family:Cambria;
+	mso-ascii-theme-font:major-latin;
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:major-fareast;
+	mso-hansi-font-family:Cambria;
+	mso-hansi-theme-font:major-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:major-bidi;
+	color:#4F81BD;
+	mso-themecolor:accent1;
+	font-weight:bold;}
+h3
+	{mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 3 Char";
+	mso-margin-top-alt:auto;
+	margin-right:0in;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	mso-outline-level:3;
+	font-size:13.5pt;
+	font-family:"Times New Roman","serif";
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:minor-fareast;
+	font-weight:bold;}
+h4
+	{mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 4 Char";
+	mso-margin-top-alt:auto;
+	margin-right:0in;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	mso-outline-level:4;
+	font-size:12.0pt;
+	font-family:"Times New Roman","serif";
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:minor-fareast;
+	font-weight:bold;}
+p
+	{mso-style-priority:99;
+	mso-margin-top-alt:auto;
+	margin-right:0in;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman","serif";
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:minor-fareast;}
+pre
+	{mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-link:"HTML Preformatted Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt;
+	font-size:10.0pt;
+	font-family:"Courier New";
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:minor-fareast;}
+tt
+	{mso-style-noshow:yes;
+	mso-style-priority:99;
+	font-family:"Courier New";
+	mso-ascii-font-family:"Courier New";
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:"Courier New";
+	mso-bidi-font-family:"Courier New";}
+span.Heading1Char
+	{mso-style-name:"Heading 1 Char";
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 1";
+	mso-ansi-font-size:14.0pt;
+	mso-bidi-font-size:14.0pt;
+	font-family:"Cambria","serif";
+	mso-ascii-font-family:Cambria;
+	mso-ascii-theme-font:major-latin;
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:major-fareast;
+	mso-hansi-font-family:Cambria;
+	mso-hansi-theme-font:major-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:major-bidi;
+	color:#365F91;
+	mso-themecolor:accent1;
+	mso-themeshade:191;
+	font-weight:bold;}
+span.Heading3Char
+	{mso-style-name:"Heading 3 Char";
+	mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 3";
+	mso-ansi-font-size:12.0pt;
+	mso-bidi-font-size:12.0pt;
+	font-family:"Cambria","serif";
+	mso-ascii-font-family:Cambria;
+	mso-ascii-theme-font:major-latin;
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:major-fareast;
+	mso-hansi-font-family:Cambria;
+	mso-hansi-theme-font:major-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:major-bidi;
+	color:#4F81BD;
+	mso-themecolor:accent1;
+	font-weight:bold;}
+span.HTMLPreformattedChar
+	{mso-style-name:"HTML Preformatted Char";
+	mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"HTML Preformatted";
+	font-family:"Consolas","serif";
+	mso-ascii-font-family:Consolas;
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Consolas;}
+span.Heading4Char
+	{mso-style-name:"Heading 4 Char";
+	mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 4";
+	mso-ansi-font-size:12.0pt;
+	mso-bidi-font-size:12.0pt;
+	font-family:"Cambria","serif";
+	mso-ascii-font-family:Cambria;
+	mso-ascii-theme-font:major-latin;
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:major-fareast;
+	mso-hansi-font-family:Cambria;
+	mso-hansi-theme-font:major-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:major-bidi;
+	color:#4F81BD;
+	mso-themecolor:accent1;
+	font-weight:bold;
+	font-style:italic;}
+span.Heading2Char
+	{mso-style-name:"Heading 2 Char";
+	mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 2";
+	mso-ansi-font-size:13.0pt;
+	mso-bidi-font-size:13.0pt;
+	font-family:"Cambria","serif";
+	mso-ascii-font-family:Cambria;
+	mso-ascii-theme-font:major-latin;
+	mso-fareast-font-family:SimSun;
+	mso-fareast-theme-font:major-fareast;
+	mso-hansi-font-family:Cambria;
+	mso-hansi-theme-font:major-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:major-bidi;
+	color:#4F81BD;
+	mso-themecolor:accent1;
+	font-weight:bold;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	mso-default-props:yes;
+	font-size:10.0pt;
+	mso-ansi-font-size:10.0pt;
+	mso-bidi-font-size:10.0pt;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:213349933;
+	mso-list-template-ids:-174030804;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1
+	{mso-list-id:921840622;
+	mso-list-template-ids:24689384;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2
+	{mso-list-id:1026298186;
+	mso-list-template-ids:-236688880;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3
+	{mso-list-id:1530220148;
+	mso-list-template-ids:-61996526;}
+@list l4
+	{mso-list-id:1579559487;
+	mso-list-template-ids:-751270684;}
+@list l5
+	{mso-list-id:1609971554;
+	mso-list-template-ids:-144274722;}
+@list l5:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l6
+	{mso-list-id:1749887233;
+	mso-list-template-ids:-1740456918;}
+@list l6:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l7
+	{mso-list-id:2015496227;
+	mso-list-template-ids:-1026532520;}
+@list l7:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman","serif";}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="2050"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+<style type="text/css"></style></head>
+
+<body lang="EN-US" link="blue" vlink="purple">
+
+<div class="Section1">
+
+<h1 align="center" style="text-align:center"><span style="mso-fareast-font-family:
+&quot;Times New Roman&quot;">CSC501: Spring 2009<o:p></o:p></span></h1>
+
+<h1 align="center" style="text-align:center"><span style="mso-fareast-font-family:
+&quot;Times New Roman&quot;">Lab 2: Read/Write Locks with Priority Inheritance<br>
+Due: March 1st 2009 23:45PM<o:p></o:p></span></h1>
+
+<h3><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">Introduction<o:p></o:p></span></h3>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">In
+this lab, you are going to implement readers/writer locks as described in this
+handout. Additionally, you will implement a priority inheritance mechanism to
+prevent the problem of priority inversion when using locks. <o:p></o:p></span></p>
+
+<p>Please untar a fresh version of the XINU source (follow the lab setup guide,
+but rename the directory to csc501-lab2) for this lab. You should NOT use the
+modified XINU source in which you implemented your Lab 1 schedulers. </p>
+
+<p>Readers/writer locks are used to synchronize access to a shared data
+structure. A lock can be acquired for read or write. A lock acquired for read
+can be shared by other readers, but a lock acquired for write must be
+exclusive. </p>
+
+<p>You have been provided with the standard semaphore implementation for XINU.
+Make sure to read and understand the XINU semaphore system and use that as a
+basis for your lock system implementation (see Chapter 6 of the Silberschatz
+book, Chapter 6 of the Comer book, or read wait.c, signal.c, screate.c,
+sdelete.c, etc, carefully). You should NOT modify the standard semaphore
+implementation, since semaphores are used in the rest of the kernel, e.g., in
+device drivers. </p>
+
+<p>The standard semaphores implemented in XINU are quite useful, and locks can
+be implemented as binary semaphores. However, XINU semaphores do not
+distinguish between read access, which can be shared, and write access, which
+must be exclusive. Hence, semaphores may unnecessarily restrict concurrency in
+certain situations. </p>
+
+<p>Another problem with XINU's semaphores occurs when a semaphore is deleted at
+a time when it has processes waiting in its queue. In such a situation, <i>sdelete
+</i>awakens all the waiting processes by moving them from the semaphore queue
+to the ready list. As a result, a process that is waiting for some event to
+occur will be awakened, even though the event has not yet occurred. </p>
+
+<p>Yet another problem that occurs due to the interactions between process
+synchronization and process scheduling is priority inversion. Priority
+inversion occurs when a high priority thread is blocked waiting on a lock (or a
+semaphore) held by a lower priority thread. This can lead to erroneous system
+behavior, especially in real time systems. There are 2 flavors of priority
+inversion. </p>
+
+<ul type="disc">
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l2 level1 lfo1;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">Bounded priority inversion: The time the high priority
+     thread has to wait is bounded by the size of the critical section. <o:p></o:p></span></li>
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l2 level1 lfo1;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">Unbounded priority inversion: The waiting time for the
+     high priority thread is unbounded. <o:p></o:p></span></li>
+</ul>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">There
+are many solutions in the literature to solve the problem of priority
+inversion. In this lab, you will implement one such solution known as the
+priority inheritance protocol for the locks (you need not worry about semaphores).
+More details about the problem of priority inversion (along with a real world
+example) and solutions can be found at <a href="http://mcs.une.edu.au/~iam/Data/threads/threads.html">http://mcs.une.edu.au/~iam/Data/threads/threads.html</a>.
+Please do go through it carefully. <o:p></o:p></span></p>
+
+<h3><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">Interfaces to be
+Implemented<o:p></o:p></span></h3>
+
+<p class="MsoNormal"><b><i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">Basic
+Locks</span></i></b><span style="mso-fareast-font-family:&quot;Times New Roman&quot;"> <o:p></o:p></span></p>
+
+<p>For this lab you must implement the entire readers/writer lock system. This
+includes code or functions to: </p>
+
+<ul type="disc">
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l1 level1 lfo2;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">initialize locks (call a function linit() from the
+     sysinit() function in initialize.c)<o:p></o:p></span></li>
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l1 level1 lfo2;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">create and destroy a lock (lcreate and ldelete)<o:p></o:p></span></li>
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l1 level1 lfo2;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">acquire a lock and release multiple locks (lock and
+     releaseall)<o:p></o:p></span></li>
+</ul>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">Please
+create files called linit.c, lcreate.c, ldelete.c, lock.c and releaseall.c that
+contain these functions. Use a header file called lock.h for your definitions,
+including the constants DELETED, READ and WRITE. The functions have to be
+implemented as explained next: <br>
+&nbsp; <o:p></o:p></span></p>
+
+<ul type="disc">
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l7 level1 lfo3;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">Create a lock: int lcreate (void) - Creates a lock and
+     returns a lock descriptor that can be used in further calls to refer to
+     this lock. This call should return SYSERR if there are no available
+     entries in the lock table. The number of locks allowed is NLOCKS, which
+     you should define in lock.h to be 50. <o:p></o:p></span></li>
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l7 level1 lfo3;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">Destroy a lock: int ldelete (int lockdescriptor) -
+     Deletes the lock identified by the descriptor <i>lockdescriptor</i>. (see
+     "Lock Deletion" below) <o:p></o:p></span></li>
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l7 level1 lfo3;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">Acquisition of a lock for read/write: int lock (int
+     ldes1, int type, int priority) -&nbsp; This call is explained below
+     ("Wait on locks with Priority").<o:p></o:p></span></li>
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l7 level1 lfo3;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">Simultaneous release of multiple locks: int releaseall
+     (int numlocks, int ldes1,..., int ldesN)<o:p></o:p></span></li>
+</ul>
+
+<h3><i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">(1) Lock
+Deletion</span></i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;"><o:p></o:p></span></h3>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">As
+mentioned before, there is a slight problem with XINU semaphores. The way XINU
+handles <i>sdelete</i> may have undesirable effects if a semaphore is deleted
+while a process or processes are waiting on it. Examining the code for wait and
+sdelete, you will notice that sdelete readies processes waiting on a semaphore
+being deleted. So they will return from wait with OK. <o:p></o:p></span></p>
+
+<p>You must implement your lock system such that waiting on a lock will return
+a new constant DELETED instead of OK when returning due to a deleted lock. This
+will indicate to the user that the lock was deleted and not unlocked. As
+before, any calls to lock() after the lock is deleted should return SYSERR. </p>
+
+<p>There is also another subtle but important point to note. Consider the
+following scenario. Let us say that there are three processes A, B, and
+C.&nbsp; Let A create a lock with descriptor=X. Let&nbsp; A and B use&nbsp; X
+to synchronize among themselves. Now, let us assume that A deletes the lock X.
+But B does not know about that. If, now, C tries to create a lock, there is a
+chance that it gets the same lock descriptor as that of X (lock descriptors are
+limited and hence can be reused). When B waits on X the next time, it should
+get a SYSERR. It should not acquire the lock C has now newly created, even if
+this lock has the same id as that of the previous one. You have to find a way
+to implement this facility, in addition to the DELETED issue above. </p>
+
+<h3><i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">(2) Locking
+Policy</span></i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;"><o:p></o:p></span></h3>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">In
+your implementation, no readers should be kept waiting unless (i) a writer has
+already obtained the lock, or (ii) there is a higher priority writer already
+waiting for the lock. Hence, when a writer or the last reader releases a lock,
+the lock should be next given to a process having the highest waiting priority
+for the lock. In the case of equal waiting priorities, writers should be given
+preference to acquire the lock over readers. In any case, if a reader is chosen
+to have a lock, then all the other waiting readers having priority not less
+than that of the highest priority waiting writer for the same lock should also
+be admitted. <o:p></o:p></span></p>
+
+<h3><i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">(3) Wait on
+Locks with Priority</span></i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;"><o:p></o:p></span></h3>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">This
+call allows a process to wait on a lock with priority. The call will have the
+form: <o:p></o:p></span></p>
+
+<pre>int lock (int ldes1, int type, int priority)</pre>
+
+<p>where priority is any integer priority value (including negative values,
+positive values and zero). </p>
+
+<p>Thus when a process waits, it will be able to specify a wait priority.
+Rather than simply enqueuing the process at the end of the queue, the lock()
+call should now insert the process into the lock's wait list according to the
+wait priority. Please note that the wait priority is different from a process's
+scheduling priority specified in the <i>create(..)</i> system call. A larger
+value of the priority parameter means a higher priority. </p>
+
+<p>Control is returned only when the process is able to acquire the lock.
+Otherwise, the calling process is blocked until the lock can be obtained. </p>
+
+<p>Acquiring a lock has the following meaning:</p>
+
+<ol start="1" type="1">
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l4 level1 lfo4;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">The lock is free, i.e., no process is owning it. In
+     this case the process that requested the lock gets the lock and sets the
+     type of locking as READ or WRITE.<o:p></o:p></span></li>
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l4 level1 lfo4;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">Lock is already acquired:<o:p></o:p></span></li>
+ <ol start="1" type="1">
+  <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:
+      auto;mso-list:l4 level2 lfo4;tab-stops:list 1.0in"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">For READ:<br>
+      If the requesting process has specified the lock type as READ and has
+      sufficiently high priority (not less than the highest priority writer
+      process waiting for the lock), it acquires the lock, else not. <o:p></o:p></span></li>
+  <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:
+      auto;mso-list:l4 level2 lfo4;tab-stops:list 1.0in"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">For WRITE:<br>
+      In this case, the requesting process does not get the lock as WRITE locks
+      are exclusive.<o:p></o:p></span></li>
+ </ol>
+</ol>
+
+<h3><i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">(4) Releasing
+Locks</span></i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;"><o:p></o:p></span></h3>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">Simultaneous
+<i>release</i> allows a process to release one or more locks simultaneously.
+The system call has the form <o:p></o:p></span></p>
+
+<pre>int releaseall (int numlocks, int ldes1, ...)</pre>
+
+<p>and should be defined according to the locking policy given above. Also,
+each of the lock descriptors must correspond to a lock being held by the
+calling process. Note that the releaseall function uses a variable number of
+arguments, with the first argument specifying the number of arguments to the
+function call. </p>
+
+<h3><i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">(5) Using
+Variable Arguments</span></i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;"><o:p></o:p></span></h3>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">The
+call releaseall (int numlocks,..), has a variable number of arguments. For
+instance, it could be: <o:p></o:p></span></p>
+
+<pre style="margin-left:.5in;text-indent:-.25in;mso-list:l5 level1 lfo5"><!--[if !supportLists]--><span style="font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol"><span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><!--[endif]-->releaseall(numlocks,ldes1, ldes2);</pre><pre style="margin-left:.5in;text-indent:-.25in;mso-list:l5 level1 lfo5"><!--[if !supportLists]--><span style="font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol"><span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><!--[endif]-->releaseall(numlocks,ldes1, ldes2, ldes3, ldes4);</pre>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">where
+numlocks = 2 in the first case and numlocks = 4 in the second case. <o:p></o:p></span></p>
+
+<p>The first call releases two locks ldes1 and ldes2. The second releases four
+locks. You will not use the va_list/va_arg facilities to accommodate variable
+numbers of arguments, but will obtain the arguments directly from the stack.
+See create.c for hints on how to do this. </p>
+
+<h3><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">Priority
+Inheritance<o:p></o:p></span></h3>
+
+<p class="MsoNormal"><i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">Note:</span></i><span style="mso-fareast-font-family:&quot;Times New Roman&quot;"> The priority mentioned in
+this section is the process' scheduling priority and not the wait priority. The
+priority inheritance protocol solves the problem of priority inversion by
+increasing the priority of the low priority process holding the lock to the
+priority of the high priority process waiting on the lock. <o:p></o:p></span></p>
+
+<p>Basically, the following invariant must be maintained for all processes p: <br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Prio(p) = max (Prio(<i>pi</i>)) &nbsp;&nbsp; for
+all processes <i>pi</i> waiting on any of the locks held by process p.<br>
+<br>
+Furthermore, you also have to ensure the transitivity of priority inheritance.
+This scenario can be illustrated with the help of an example. Suppose there are
+three processes A, B, and C with priorities 10, 20, and 30 respectively.
+Process A acquires a lock L1 and Process B acquires a lock L2. Process A then
+waits on the lock L2 and becomes ineligible for execution. If now process C
+waits on the lock L1, then the priorities of both the processes A and B should
+be raised to 30. </p>
+
+<h4><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">Priority
+Inheritance Implementation Hints<o:p></o:p></span></h4>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">These
+hints give a possible implementation of the priority inheritance protocol. You
+are free to come up with your own implementation as long as the functionality
+is correct. <o:p></o:p></span></p>
+
+<p>You can maintain the following information: </p>
+
+<ul type="disc">
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l6 level1 lfo6;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">Inside the process table entry: <br>
+     a) The original priority (pprio) with which a process is created.<br>
+     b) pinh - The current inherited priority of the process. This value can be
+     0 when the process is running with its original priority.<br>
+     c) A bit mask or a linked list through which all the locks held by the
+     process can be found.<br>
+     d) An integer value lockid indicating the lock descriptor in whose wait
+     queue the process is blocked. It can take the value -1 when the process is
+     not blocked inside any wait queue. Note that a process can be only inside
+     a single wait queue at a time. <o:p></o:p></span></li>
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l6 level1 lfo6;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">Inside the lock descriptor table entry.<br>
+     a) A priority field (lprio) indicating the maximum priority among all the
+     processes waiting in the lock's wait queue.<br>
+     b) A linked list/bitmask of the process ids of the processes currently
+     holding the lock.<o:p></o:p></span></li>
+</ul>
+
+<p class="MsoNormal"><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">The
+actions to be performed in the following situations are: <o:p></o:p></span></p>
+
+<ul type="disc">
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo7;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">lock: Suppose that the process P1 requests a lock. If the
+     lock is available, then nothing needs to be done. Otherwise, if the
+     priority of the process (P2) holding the lock is no less than the priority
+     of P1, then also nothing has to be done. Otherwise the priority of P2
+     (pinh) has to be ramped up to the priority of P1 (pinh if pinh != 0;pprio
+     otherwise). Note that whenever we refer to the priority of a process, we
+     refer to the pinh field if it is non-zero; pprio otherwise. After ramping
+     up the priority of P1, we also have to take care of the transitivity of priority
+     inheritance as discussed earlier. <o:p></o:p></span></li>
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo7;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">Release: On releasing a lock, the priority of the
+     process has to be reset to the maximum priority of all the processes in
+     the wait queues of all the locks <i>still </i>held by the process. The
+     bitmask/linked list field in the process table entry can be used for this
+     purpose. Note that multiple locks can be released by a process. <o:p></o:p></span></li>
+ <li class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo7;tab-stops:list .5in"><span style="mso-fareast-font-family:
+     &quot;Times New Roman&quot;">chprio, kill, etc: These system calls can also have a
+     side effect. If a process P1, in the wait queue of a lock L has its
+     priority changed or is killed, we need to recalculate the maximum priority
+     of all the processes in L's wait queue, and update the priority of the
+     processes holding L too, if necessary. <o:p></o:p></span></li>
+</ul>
+
+<p>This is a basic outline, but feel free to modify/improve upon this scheme.
+Questions should be posted to the message board. </p>
+
+<p>You are provided with a code example in the file <a href="http://www.csc.ncsu.edu/faculty/jiang/csc501/labs/lab2/test1.c">test1.c </a></p>
+
+<h3><span style="mso-fareast-font-family:&quot;Times New Roman&quot;">3.&nbsp; Turnin
+Instructions:<o:p></o:p></span></h3>
+
+<p><i>Electronic turn-in instructions</i> (<b style="mso-bidi-font-weight:normal"><span style="color:red;mso-bidi-font-style:italic">Make sure that your code compiles
+and that you have turned off all your debugging output!):</span></b></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i) go to the csc501-lab2/compile
+directory and do "make clean".</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ii) go to the directory of which
+your csc501-lab2 directory is a subdirectory (NOTE: please do not rename
+csc501-lab2, or any of its subdirectories.)</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+e.g., if /home/csc501/csc501-lab2 is your directory structure, goto
+/homes/csc501 </p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iii) create a subdirectory TMP  (under the directory csc501-lab2)
+and copy all the files you have modified/written, both .c files and .h files
+into the directory. </p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iv) compress the csc501-lab2
+directory into a tgz file and use Wolfware's <a href="http://submit.ncsu.edu/">Submit
+Assignment</a> facility. Please only upload one tgz file. </p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+tar czf csc501-lab2.tgz csc501-lab2</p>
+
+<p>Also, please remember that you are allowed and encouraged to share testcases
+on the message board. </p>
+
+</div>
+
+
+
+
+</body></html>
